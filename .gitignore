@@ -23,3 +23,20 @@ Build/
 
 # Crash reports
 *.dmp
+
+# Generated/Local tools
+__pycache__/
+*.pyc
+app/
+MyProject/
+*.sln
+
+# Local MCP/Claude config
+.mcp.json
+unreal_mcp_bridge.py
+
+# Claude Code worktrees (local only)
+.claude/worktrees/
+
+# External dev tools (not needed to run the project)
+Plugins/VibeUE/

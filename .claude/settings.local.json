@@ -1,7 +1,19 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "mcp__VibeUE__manage_asset",
+      "mcp__VibeUE__execute_python_code",
+      "mcp__VibeUE__manage_skills",
+      "Bash(python -c \"from PIL import Image, ImageDraw, ImageFilter; print\\('PIL OK'\\)\")",
+      "mcp__VibeUE__list_python_subsystems",
+      "Bash(curl -s http://127.0.0.1:8088/mcp -H \"Authorization: Bearer vibe_ZWP06wN0OXCUqI6JHU6tskESLjWpqfzx\" -H \"Content-Type: application/json\" -d \"{\\\\\"jsonrpc\\\\\":\\\\\"2.0\\\\\",\\\\\"id\\\\\":1,\\\\\"method\\\\\":\\\\\"initialize\\\\\",\\\\\"params\\\\\":{\\\\\"protocolVersion\\\\\":\\\\\"2024-11-05\\\\\",\\\\\"capabilities\\\\\":{},\\\\\"clientInfo\\\\\":{\\\\\"name\\\\\":\\\\\"claude-code\\\\\",\\\\\"version\\\\\":\\\\\"1.0\\\\\"}}}\")",
+      "Bash(curl -s http://127.0.0.1:8088/mcp -H 'Authorization: Bearer vibe_ZWP06wN0OXCUqI6JHU6tskESLjWpqfzx' -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/call\",\"params\":{\"name\":\"execute_python_code\",\"arguments\":{\"code\":\"import unreal\\\\nue_dest = '\\\\''/Game/FirstPerson/Menus/UI_Assets'\\\\''\\\\nassets = ['\\\\''T_DarkOverlay'\\\\'','\\\\''T_BadgeRing'\\\\'','\\\\''T_GridOverlay'\\\\'','\\\\''T_Corner_TL'\\\\'','\\\\''T_Corner_TR'\\\\'','\\\\''T_Corner_BL'\\\\'','\\\\''T_Corner_BR'\\\\'','\\\\''T_Separator'\\\\'']\\\\nfor a in assets:\\\\n    exists = unreal.EditorAssetLibrary.does_asset_exist\\(f'\\\\''{ue_dest}/{a}'\\\\''\\)\\\\n    print\\(f'\\\\''{a}: {\\\\\"OK\\\\\" if exists else \\\\\"FALTA\\\\\"}'\\\\''\\)\\\\n\"}}}')",
+      "Bash(python -c ':*)",
+      "Bash(curl -s http://127.0.0.1:8088/mcp -H 'Authorization: Bearer vibe_ZWP06wN0OXCUqI6JHU6tskESLjWpqfzx' -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":3,\"method\":\"tools/call\",\"params\":{\"name\":\"execute_python_code\",\"arguments\":{\"code\":__TRACKED_VAR__}}}')",
+      "Bash(curl -s http://127.0.0.1:8088/mcp -H 'Authorization: Bearer vibe_ZWP06wN0OXCUqI6JHU6tskESLjWpqfzx' -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":10,\"method\":\"tools/call\",\"params\":{\"name\":\"execute_python_code\",\"arguments\":{\"code\":__TRACKED_VAR__}}}')",
+      "Bash(python -c \"import sys,json; r=json.load\\(sys.stdin\\); print\\(r['result']['content'][0]['text']\\)\")",
+      "Bash(curl -s http://127.0.0.1:8088/mcp -H 'Authorization: Bearer vibe_ZWP06wN0OXCUqI6JHU6tskESLjWpqfzx' -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":20,\"method\":\"tools/call\",\"params\":{\"name\":\"execute_python_code\",\"arguments\":{\"code\":__TRACKED_VAR__}}}')"
     ]
   }
 }

@@ -1,4 +1,4 @@
-# Unreal Engine
+# Unreal generated folders
 Binaries/
 DerivedDataCache/
 Intermediate/
@@ -11,19 +11,6 @@ Saved/
 *.xcodeproj
 *.xcworkspace
 
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-
-# Build
-Build/
-
-# Crash reports
-*.dmp
-
 # Generated/Local tools
 __pycache__/
 *.pyc
@@ -31,12 +18,59 @@ app/
 MyProject/
 *.sln
 
-# Local MCP/Claude config
+# Local AI/editor folders
+.Aura/
+.claude/
+tools/
+ObsidianTesis/
+
+# Local MCP/Codex config
 .mcp.json
+.codex/
 unreal_mcp_bridge.py
 
-# Claude Code worktrees (local only)
-.claude/worktrees/
+# Local backups / temporary files and folders
+_BACKUP*/
+*BACKUP*/
+*_BACKUP*/
+*_BAK*/
+*BACKUP*.uasset
+*BACKUP*.umap
+*Backup*.uasset
+*Backup*.umap
+*backup*.uasset
+*backup*.umap
+*BAK*.uasset
+*BAK*.umap
+*.bak
+*.bak_*
+*.tmp
+*.log
+
+# Build/package outputs
+Build/
+Packaged/
+Windows/
+WindowsNoEditor/
+Android/
+IOS/
+Linux/
+Mac/
+
+# Visual Studio / Rider
+*.suo
+*.opensdf
+*.sdf
+*.user
+*.VC.db
+*.VC.opendb
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Crash reports
+*.dmp
 
 # External dev tools (not needed to run the project)
 Plugins/VibeUE/

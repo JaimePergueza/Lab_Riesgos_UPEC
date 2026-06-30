@@ -44,6 +44,18 @@
 		{
 			"Name": "OpenXRHandTracking",
 			"Enabled": true
+		},
+		{
+			"Name": "Aura",
+			"Enabled": false
+		},
+		{
+			"Name": "meshy",
+			"Enabled": true,
+			"SupportedTargetPlatforms": [
+				"Win64",
+				"Mac"
+			]
 		}
 	]
 }

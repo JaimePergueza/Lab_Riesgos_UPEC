@@ -77,7 +77,14 @@ TSharedPtr<FJsonObject> FUnrealMCPUMGCommands::HandleCreateUMGWidgetBlueprint(co
 	// Check if asset already exists
 	if (UEditorAssetLibrary::DoesAssetExist(FullPath))
 	{
-		return FUnrealMCPCommonUtils::CreateErrorResponse(FString::Printf(TEXT("Widget Blueprint '%s' already exists"), *BlueprintName));
+		// If it exists but is NOT a proper WidgetBlueprint (e.g. was created as regular Blueprint), delete and recreate
+		UWidgetBlueprint* ExistingWB = Cast<UWidgetBlueprint>(UEditorAssetLibrary::LoadAsset(FullPath));
+		if (ExistingWB)
+		{
+			return FUnrealMCPCommonUtils::CreateErrorResponse(FString::Printf(TEXT("Widget Blueprint '%s' already exists"), *BlueprintName));
+		}
+		// Wrong type – remove so we can create a proper WidgetBlueprint
+		UEditorAssetLibrary::DeleteAsset(FullPath);
 	}
 
 	// Create package
@@ -93,7 +100,7 @@ TSharedPtr<FJsonObject> FUnrealMCPUMGCommands::HandleCreateUMGWidgetBlueprint(co
 		Package,                     // Outer package
 		FName(*AssetName),           // Blueprint name
 		BPTYPE_Normal,               // Blueprint type
-		UBlueprint::StaticClass(),   // Blueprint class
+		UWidgetBlueprint::StaticClass(),         // Must be WidgetBlueprint, not UBlueprint
 		UBlueprintGeneratedClass::StaticClass(), // Generated class
 		FName("CreateUMGWidget")     // Creation method name
 	);

@@ -1,3 +1,5 @@
+![Logo](Logo.png)
+
 # Lab_Riesgos_UPEC
 
 Simulador en **Realidad Virtual (RV)** desarrollado con **Unreal Engine 5.7** para la **prevención de riesgos laborales** en laboratorios de microbiología/biotecnología.

@@ -9,7 +9,6 @@ Se evaluó la **aceptación tecnológica (TAM)** y la **usabilidad (SUS)** del s
 
 - Unreal Engine 5.7
 - Git + Git LFS
-- Plugin **VibeUE** (instalar manualmente)
 - Casco de RV compatible con OpenXR (opcional para edición)
 
 ## Clonar
@@ -18,16 +17,7 @@ Se evaluó la **aceptación tecnológica (TAM)** y la **usabilidad (SUS)** del s
 git lfs clone https://github.com/JaimePergueza/Lab_Riesgos_UPEC.git
 ```
 
-Abrir `Lab_Riesgos_UPEC.uproject` — el motor regenerará `Binaries/` e `Intermediate/`.
-
-## Plugins habilitados
-
-- UnrealMCP
-- ModelingToolsEditorMode
-- GameplayStateTree
-- WMFCodecs
-- OpenXR + HandTracking
-- Meshy
+Abrir `Lab_Riesgos_UPEC.uproject` — el motor regenerará los archivos necesarios automáticamente.
 
 ## Mapas activos
 
@@ -42,10 +32,3 @@ Abrir `Lab_Riesgos_UPEC.uproject` — el motor regenerará `Binaries/` e `Interm
 - **R** — Recoger pinza / fragmentos de vidrio
 - Movimiento WASD + ratón (estándar FirstPerson)
 - OpenXR + HandTracking para interacción en RV
-
-## Configuración inicial
-
-1. Clonar con `git lfs clone`
-2. Instalar **VibeUE** plugin en la PC de destino
-3. Copiar `.mcp.json` local si se trabaja con MCP
-4. Abrir `.uproject` y esperar a que compile

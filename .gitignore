@@ -26,6 +26,7 @@ ObsidianTesis/
 
 # Local MCP/Codex config
 .mcp.json
+.cursor/mcp.json
 .codex/
 unreal_mcp_bridge.py
 

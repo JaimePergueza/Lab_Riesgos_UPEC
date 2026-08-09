@@ -24,7 +24,7 @@
 		},
 		{
 			"Name": "GameplayStateTree",
-			"Enabled": true
+			"Enabled": false
 		},
 		{
 			"Name": "WMFCodecs",
@@ -35,15 +35,19 @@
 		},
 		{
 			"Name": "OpenXR",
-			"Enabled": true
+			"Enabled": false
 		},
 		{
 			"Name": "OpenXREyeTracker",
-			"Enabled": true
+			"Enabled": false
 		},
 		{
 			"Name": "OpenXRHandTracking",
-			"Enabled": true
+			"Enabled": false
+		},
+		{
+			"Name": "NNEDenoiser",
+			"Enabled": false
 		},
 		{
 			"Name": "Aura",

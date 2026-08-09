@@ -1,0 +1,62 @@
+diff --git a/Source/VibeUE/Private/PythonAPI/UBlueprintService.cpp b/Source/VibeUE/Private/PythonAPI/UBlueprintService.cpp
+index e791c85..d537a07 100644
+--- a/Source/VibeUE/Private/PythonAPI/UBlueprintService.cpp
++++ b/Source/VibeUE/Private/PythonAPI/UBlueprintService.cpp
+@@ -876,9 +876,12 @@ bool UBlueprintService::AddComponent(
+ 		if (ParentNode)
+ 		{
+ 			ParentNode->AddChildNode(NewNode);
+-			// CRITICAL: Call SetParent to properly set ParentComponentOrVariableName
+-			// AddChildNode only manages the ChildNodes array, it does NOT set the parent reference
+-			NewNode->SetParent(ParentNode);
++			// Local SCS parentage is serialized by the ChildNodes hierarchy. The
++			// ParentComponent* fields are reserved for inherited/native parents;
++			// setting both representations triggers the UE 5.7 SCS fixup ensure.
++			NewNode->ParentComponentOrVariableName = NAME_None;
++			NewNode->ParentComponentOwnerClassName = NAME_None;
++			NewNode->bIsParentComponentNative = false;
+ 		}
+ 		else
+ 		{
+@@ -1350,8 +1353,9 @@ bool UBlueprintService::SetRootComponent(
+ 		// Make the old root a child of the new root
+ 		SCS->RemoveNode(CurrentRootNode);
+ 		NewRootNode->AddChildNode(CurrentRootNode);
+-		// CRITICAL: Call SetParent to properly set ParentComponentOrVariableName
+-		CurrentRootNode->SetParent(NewRootNode);
++		CurrentRootNode->ParentComponentOrVariableName = NAME_None;
++		CurrentRootNode->ParentComponentOwnerClassName = NAME_None;
++		CurrentRootNode->bIsParentComponentNative = false;
+ 	}
+ 	
+ 	// Add new root as a root node
+@@ -1363,8 +1367,9 @@ bool UBlueprintService::SetRootComponent(
+ 		if (Child && Child != NewRootNode && Child != CurrentRootNode)
+ 		{
+ 			NewRootNode->AddChildNode(Child);
+-			// CRITICAL: Call SetParent to properly set ParentComponentOrVariableName
+-			Child->SetParent(NewRootNode);
++			Child->ParentComponentOrVariableName = NAME_None;
++			Child->ParentComponentOwnerClassName = NAME_None;
++			Child->bIsParentComponentNative = false;
+ 		}
+ 	}
+ 	
+@@ -1576,10 +1581,13 @@ bool UBlueprintService::ReparentComponent(
+ 	
+ 	// Add to new parent
+ 	NewParent->AddChildNode(NodeToReparent);
+-	
+-	// CRITICAL: Call SetParent to properly set ParentComponentOrVariableName
+-	// AddChildNode only manages the ChildNodes array, it does NOT set the parent reference
+-	NodeToReparent->SetParent(NewParent);
++
++	// Both nodes belong to this Blueprint's SCS, so ChildNodes is the source
++	// of truth. Clear inherited/native parent metadata to avoid serializing
++	// the same local relationship twice (UE 5.7 SimpleConstructionScript.cpp:474).
++	NodeToReparent->ParentComponentOrVariableName = NAME_None;
++	NodeToReparent->ParentComponentOwnerClassName = NAME_None;
++	NodeToReparent->bIsParentComponentNative = false;
+ 	
+ 	// Mark blueprint as modified
+ 	FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(Blueprint);

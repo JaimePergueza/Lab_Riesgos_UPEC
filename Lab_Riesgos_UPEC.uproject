@@ -56,6 +56,13 @@
 				"Win64",
 				"Mac"
 			]
+		},
+		{
+			"Name": "BlueprintCommentTools",
+			"Enabled": true,
+			"TargetAllowList": [
+				"Editor"
+			]
 		}
 	]
 }

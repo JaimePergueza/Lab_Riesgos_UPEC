@@ -1,0 +1,17 @@
+{
+  "ImportGroups": [
+    {
+      "GroupName": "PauseUI_Mockup01",
+      "Filenames": [
+        "D:/Copia de Lab_Riesgos_UPEC/SourceAssets/PauseUI/T_PausePanel_Mockup01.png",
+        "D:/Copia de Lab_Riesgos_UPEC/SourceAssets/PauseUI/T_PauseButton_Play.png",
+        "D:/Copia de Lab_Riesgos_UPEC/SourceAssets/PauseUI/T_PauseButton_Settings.png",
+        "D:/Copia de Lab_Riesgos_UPEC/SourceAssets/PauseUI/T_PauseButton_Exit.png"
+      ],
+      "DestinationPath": "/Game/UI/Pause",
+      "FactoryName": "TextureFactory",
+      "bReplaceExisting": false,
+      "bSkipReadOnly": true
+    }
+  ]
+}

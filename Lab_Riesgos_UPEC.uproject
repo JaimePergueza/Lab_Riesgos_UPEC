@@ -35,15 +35,19 @@
 		},
 		{
 			"Name": "OpenXR",
-			"Enabled": false
+			"Enabled": true
+		},
+		{
+			"Name": "XRBase",
+			"Enabled": true
 		},
 		{
 			"Name": "OpenXREyeTracker",
-			"Enabled": false
+			"Enabled": true
 		},
 		{
 			"Name": "OpenXRHandTracking",
-			"Enabled": false
+			"Enabled": true
 		},
 		{
 			"Name": "NNEDenoiser",
@@ -67,6 +71,10 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "PixelStreaming",
+			"Enabled": true
 		}
 	]
 }

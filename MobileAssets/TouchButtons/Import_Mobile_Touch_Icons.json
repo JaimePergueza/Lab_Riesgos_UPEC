@@ -1,0 +1,16 @@
+{
+  "ImportGroups": [
+    {
+      "GroupName": "MobileTouchIcons",
+      "Filenames": [
+        "MobileAssets/TouchButtons/Touch_Interact_E.png",
+        "MobileAssets/TouchButtons/Touch_Collect_R.png",
+        "MobileAssets/TouchButtons/Touch_Pause.png"
+      ],
+      "DestinationPath": "/Game/Mobile/UI/Textures",
+      "bReplaceExisting": false,
+      "bSkipReadOnly": true,
+      "FactoryName": "TextureFactory"
+    }
+  ]
+}

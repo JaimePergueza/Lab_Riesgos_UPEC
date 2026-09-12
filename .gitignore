@@ -21,14 +21,14 @@ MyProject/
 # Local AI/editor folders
 .Aura/
 .claude/
-tools/
 ObsidianTesis/
 
-# Local MCP/Codex config
+# Local MCP/Codex config (contains machine-specific credentials)
 .mcp.json
 .cursor/mcp.json
 .codex/
-unreal_mcp_bridge.py
+next/.mcp-config.json
+Config/DefaultEditorPerProjectUserSettings.ini
 
 # Local backups / temporary files and folders
 _BACKUP*/
@@ -41,8 +41,11 @@ _BACKUP*/
 *Backup*.umap
 *backup*.uasset
 *backup*.umap
-*BAK*.uasset
-*BAK*.umap
+*_BAK_*.uasset
+*_BAK_*.umap
+/BP_FirstPersonCharacter.uasset
+/SourceAssets/Quarantine_Optimization_20260808/
+/AndroidLogs/
 *.bak
 *.bak_*
 *.tmp
@@ -50,10 +53,18 @@ _BACKUP*/
 
 # Build/package outputs
 Build/
+!/Build/
+/Build/*
+!/Build/Android/
+/Build/Android/*
+!/Build/Android/res/
+!/Build/Android/res/**
+!/Build/Android/src/
+!/Build/Android/src/**
 Packaged/
 Windows/
 WindowsNoEditor/
-Android/
+/Android/
 IOS/
 Linux/
 Mac/

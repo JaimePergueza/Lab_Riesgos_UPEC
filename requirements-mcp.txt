@@ -1,0 +1,2 @@
+# Solo para el puente TCP heredado unreal_mcp_bridge.py (puerto 55557).
+mcp>=1,<2

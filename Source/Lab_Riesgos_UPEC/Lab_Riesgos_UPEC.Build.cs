@@ -9,5 +9,6 @@ public class Lab_Riesgos_UPEC : ModuleRules
 		PrivateDependencyModuleNames.Add("Core");
 		PrivateDependencyModuleNames.Add("CoreUObject");
 		PrivateDependencyModuleNames.Add("Engine");
+		PrivateDependencyModuleNames.AddRange(new string[] { "InputCore", "EnhancedInput", "HeadMountedDisplay", "XRBase", "UMG", "Slate", "SlateCore" });
 	}
 }

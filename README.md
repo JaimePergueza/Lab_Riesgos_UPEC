@@ -16,10 +16,14 @@ Se evaluó la **aceptación tecnológica (TAM)** y la **usabilidad (SUS)** del s
 ## Clonar
 
 ```powershell
-git lfs clone https://github.com/JaimePergueza/Lab_Riesgos_UPEC.git
+git clone --branch codex/optimizacion-empaquetado https://github.com/JaimePergueza/Lab_Riesgos_UPEC.git
+cd Lab_Riesgos_UPEC
+git lfs pull
 ```
 
 Abrir `Lab_Riesgos_UPEC.uproject` — el motor regenerará los archivos necesarios automáticamente.
+
+Para instalar las dependencias, reconstruir VibeUE y conectar Codex/MCP en otra PC, sigue [MIGRACION.md](MIGRACION.md).
 
 ## Mapas activos
 

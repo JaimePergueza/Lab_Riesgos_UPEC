@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>La realidad virtual en la prevención de riesgos laborales — Defensa TIC</title>
+  <meta name="description" content="Presentación web 3D de la tesis sobre realidad virtual de escritorio aplicada a la preparación preventiva en el Laboratorio de Microbiología y Biotecnología de la UPEC." />
+  <style>
+    :root{
+      --bg:#031015; --panel:rgba(5,22,28,.78); --line:rgba(255,255,255,.12);
+      --text:#f4f8f6; --muted:#9cb6ad; --accent:#7cf6bf; --accent2:#51b7ff;
+      --danger:#ff6b6b; --warn:#ffd166; --shadow:0 24px 80px rgba(0,0,0,.38);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    body:before{
+      content:"";position:fixed;inset:0;z-index:1;pointer-events:none;
+      background:
+        radial-gradient(circle at 20% 18%,rgba(124,246,191,.10),transparent 26%),
+        radial-gradient(circle at 80% 78%,rgba(81,183,255,.09),transparent 28%),
+        linear-gradient(180deg,rgba(3,16,21,.02),rgba(3,16,21,.42));
+    }
+    #three{position:fixed;inset:0;z-index:0}
+    .hud{position:fixed;inset:0;z-index:2;pointer-events:none}
+    .topbar{position:absolute;top:0;left:0;right:0;padding:24px 28px;display:flex;align-items:center;gap:18px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.06em;font-size:12px;text-transform:uppercase;color:#dceee7}
+    .brand .seal{width:34px;height:34px;border:1px solid rgba(124,246,191,.42);border-radius:11px;display:grid;place-items:center;background:rgba(124,246,191,.08);box-shadow:0 0 30px rgba(124,246,191,.10)}
+    .brand .seal:after{content:"U";font-size:16px;color:var(--accent)}
+    .progressWrap{margin-left:auto;display:flex;align-items:center;gap:12px}
+    .progressTrack{width:min(260px,30vw);height:4px;border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden}
+    #progressBar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .45s ease}
+    #counter{font-variant-numeric:tabular-nums;color:#cfe0d9;font-size:12px}
+    .card{
+      pointer-events:auto;position:absolute;left:6vw;top:50%;transform:translateY(-50%);
+      width:min(650px,49vw);padding:28px 30px 26px;border:1px solid var(--line);
+      border-radius:24px;background:linear-gradient(180deg,rgba(6,25,31,.88),rgba(5,19,25,.74));
+      backdrop-filter:blur(18px);box-shadow:var(--shadow);overflow:hidden
+    }
+    .card:before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:linear-gradient(180deg,var(--accent),transparent 70%)}
+    #eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.16em;color:var(--accent);font-weight:800;margin-bottom:12px}
+    #title{font-size:clamp(32px,4vw,62px);line-height:.96;letter-spacing:-.045em;margin:0 0 18px;font-weight:850;max-width:12ch}
+    #lead{font-size:clamp(16px,1.45vw,21px);line-height:1.5;color:#c7d8d2;max-width:52ch;margin:0 0 20px}
+    #bullets{display:grid;gap:9px;margin:0 0 20px;padding:0;list-style:none}
+    #bullets li{display:flex;gap:10px;align-items:flex-start;color:#eef6f3;font-size:14px;line-height:1.45}
+    #bullets li:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 16px var(--accent);margin-top:7px;flex:0 0 auto}
+    .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px}
+    .stat{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.035);padding:13px 14px;border-radius:15px;min-height:78px}
+    .stat b{display:block;font-size:23px;line-height:1;color:#fff;margin-bottom:6px}
+    .stat span{display:block;font-size:11px;color:var(--muted);line-height:1.25}
+    .micro{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+    .pill{font-size:11px;padding:7px 9px;border-radius:999px;border:1px solid rgba(124,246,191,.22);background:rgba(124,246,191,.06);color:#c9fbe6}
+    .visual{margin-top:20px}
+    .bars{display:grid;gap:10px}
+    .barrow{display:grid;grid-template-columns:132px 1fr 54px;gap:10px;align-items:center;font-size:12px;color:#cfe0d9}
+    .bartrack{height:8px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+    .barfill{height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--accent2));transform-origin:left;animation:grow .8s cubic-bezier(.2,.8,.2,1) both}
+    @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+    .pipeline{display:flex;align-items:center;gap:7px;overflow:hidden}
+    .pipe{padding:9px 10px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.035);font-size:11px;white-space:nowrap}
+    .arrow{color:var(--accent);opacity:.7}
+    .controls{position:absolute;left:6vw;bottom:28px;display:flex;align-items:center;gap:9px;pointer-events:auto}
+    button{appearance:none;border:1px solid rgba(255,255,255,.14);background:rgba(7,24,30,.72);color:#eaf5f1;border-radius:13px;padding:11px 14px;cursor:pointer;font:inherit;backdrop-filter:blur(10px)}
+    button:hover{border-color:rgba(124,246,191,.5);background:rgba(124,246,191,.08)}
+    button.primary{background:linear-gradient(135deg,rgba(124,246,191,.2),rgba(81,183,255,.16));border-color:rgba(124,246,191,.38)}
+    .hint{font-size:11px;color:#88a39a;margin-left:6px}
+    .navdots{pointer-events:auto;position:absolute;right:22px;top:50%;transform:translateY(-50%);display:grid;gap:7px}
+    .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.19);border:0;padding:0;transition:.2s}
+    .dot.active{background:var(--accent);box-shadow:0 0 14px rgba(124,246,191,.6);transform:scale(1.35)}
+    .sectionLabel{position:absolute;right:28px;bottom:30px;text-align:right;color:#88a39a;font-size:11px;line-height:1.5;max-width:280px}
+    .sectionLabel strong{display:block;color:#dbeae5;font-size:12px}
+    #notes{
+      display:none;pointer-events:auto;position:absolute;right:32px;top:90px;width:min(420px,34vw);max-height:calc(100vh - 170px);
+      overflow:auto;padding:20px 22px;border-radius:18px;border:1px solid rgba(255,209,102,.26);
+      background:rgba(28,23,10,.86);backdrop-filter:blur(16px);box-shadow:var(--shadow)
+    }
+    #notes.open{display:block}
+    #notes h3{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.13em;color:var(--warn)}
+    #notes p{margin:0;color:#f2e6bf;font-size:13px;line-height:1.55}
+    #notes .time{margin-top:12px;color:#cdbd86;font-size:11px}
+    .start{
+      position:absolute;inset:0;display:grid;place-items:center;z-index:4;pointer-events:auto;
+      background:radial-gradient(circle at 50% 42%,rgba(13,47,53,.22),rgba(3,16,21,.95) 64%);
+      transition:opacity .65s ease,visibility .65s ease
+    }
+    .start.hidden{opacity:0;visibility:hidden}
+    .startBox{text-align:center;width:min(760px,88vw)}
+    .kicker{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:800;margin-bottom:18px}
+    .start h1{font-size:clamp(42px,7vw,88px);line-height:.9;letter-spacing:-.055em;margin:0 auto 22px;max-width:12ch}
+    .start p{color:#b8cbc4;font-size:16px;line-height:1.6;margin:0 auto 26px;max-width:58ch}
+    .start button{padding:14px 20px}
+    .startSmall{margin-top:16px;font-size:11px;color:#78938a}
+    .toast{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);padding:10px 14px;border-radius:999px;background:rgba(5,20,26,.82);border:1px solid var(--line);font-size:11px;color:#c9dad4;opacity:0;transition:.3s}
+    .toast.show{opacity:1}
+    @media(max-width:900px){
+      .card{left:4vw;width:92vw;top:auto;bottom:92px;transform:none;padding:20px}
+      #title{font-size:36px;max-width:16ch}
+      #lead{font-size:15px}
+      .stats{grid-template-columns:repeat(3,1fr)}
+      .navdots,.sectionLabel{display:none}
+      .controls{left:4vw;bottom:26px}
+      #notes{right:4vw;width:92vw;top:70px}
+      .topbar{padding:18px}
+    }
+  </style>
+</head>
+<body>
+  <canvas id="three"></canvas>
+
+  <div class="hud">
+    <div class="topbar">
+      <div class="brand"><span class="seal"></span><span>UPEC · Carrera de Computación</span></div>
+      <div class="progressWrap">
+        <div class="progressTrack"><div id="progressBar"></div></div>
+        <span id="counter">01 / 16</span>
+      </div>
+    </div>
+
+    <main class="card" id="card">
+      <div id="eyebrow"></div>
+      <h1 id="title"></h1>
+      <p id="lead"></p>
+      <ul id="bullets"></ul>
+      <div id="stats" class="stats"></div>
+      <div id="visual" class="visual"></div>
+      <div id="micro" class="micro"></div>
+    </main>
+
+    <div class="controls">
+      <button id="prev">←</button>
+      <button id="next" class="primary">Siguiente →</button>
+      <button id="noteBtn">Notas [N]</button>
+      <button id="fullBtn">Pantalla completa [F]</button>
+      <span class="hint">← → / espacio</span>
+    </div>
+
+    <div id="navdots" class="navdots"></div>
+    <div id="sectionLabel" class="sectionLabel"></div>
+
+    <aside id="notes">
+      <h3>Guía del expositor</h3>
+      <p id="noteText"></p>
+      <div class="time" id="timeText"></div>
+    </aside>
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <div class="start" id="start">
+    <div class="startBox">
+      <div class="kicker">Defensa · Prototipo web 3D</div>
+      <h1>La realidad virtual en la prevención de riesgos laborales</h1>
+      <p>Un recorrido espacial por el problema, la construcción del simulador, los cuatro escenarios preventivos y la evidencia de usabilidad y aceptación tecnológica.</p>
+      <button class="primary" id="startBtn">Iniciar recorrido</button>
+      <div class="startSmall">Diseñado para una exposición de ≈25 minutos · usa ← → o espacio</div>
+    </div>
+  </div>
+
+  <script type="importmap">
+    {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"}}
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+
+    const sections = [
+      {
+        e:'00 · Portada', t:'La realidad virtual en la prevención de riesgos laborales',
+        l:'Tesis aplicada al Laboratorio de Microbiología y Biotecnología de la UPEC.',
+        b:['Simulador contextualizado al entorno real','Modalidad evaluada: realidad virtual de escritorio'],
+        s:[['2026','Trabajo de Integración Curricular'],['UPEC','Carrera de Computación'],['≈25 min','Recorrido guiado']],
+        tags:['Jaime Alexander Pergueza Hernández','Tutora: MSc. Georgina Guadalupe Arcos Ponce'],
+        note:'Abre situando el alcance desde el primer minuto: el tema institucional se mantiene, pero la investigación se delimitó a un laboratorio concreto y a una modalidad de escritorio. No prometas demostrar reducción de accidentes; presenta el trabajo como desarrollo y evaluación de una herramienta de preparación preventiva.',
+        min:1.0, cam:[11,7,13], target:[0,1,0], station:0
+      },
+      {
+        e:'01 · Punto de partida', t:'El riesgo existe antes de entrar al laboratorio',
+        l:'Las prácticas combinan agentes biológicos, reactivos, vidrio, calor, equipos y residuos.',
+        b:['El error no siempre nace del desconocimiento','La familiarización con el entorno también importa'],
+        s:[['2,93 M','muertes laborales/año — OIT'],['395 M','lesiones laborales no mortales/año'],['55','accidentes registrados en Carchi — IESS 2024']],
+        tags:['seguridad','bioseguridad','preparación previa'],
+        note:'No te quedes demasiado tiempo en las cifras globales. Úsalas como entrada y baja rápido al contexto universitario. La idea central es: un estudiante puede conocer normas y aun así sentirse poco preparado cuando enfrenta por primera vez un entorno, equipos y secuencias reales.',
+        min:1.6, cam:[7,5,10], target:[-3,1,-2], station:1
+      },
+      {
+        e:'02 · Delimitación', t:'De un tema amplio a un escenario concreto',
+        l:'La investigación se concentró en riesgos y procedimientos preventivos del Laboratorio de Microbiología y Biotecnología.',
+        b:['EPP','Riesgo térmico','Actuación ante derrames','Disposición de residuos'],
+        s:[['1','laboratorio'],['4','escenarios preventivos'],['1','recorrido progresivo']],
+        tags:['UPEC','contextualización','entorno controlado'],
+        note:'Aquí explica la observación recibida en el plan: el tema era general y debía delimitarse. La respuesta fue seleccionar un contexto institucional verificable y representar situaciones reconocibles del laboratorio. Esto convierte un tema amplio en un problema abordable dentro de la tesis.',
+        min:1.5, cam:[6,4.5,6], target:[0,1,-4], station:2
+      },
+      {
+        e:'03 · Problema de investigación', t:'¿La herramienta se puede usar y vale la pena usarla?',
+        l:'La tesis evalúa dos dimensiones: usabilidad y aceptación tecnológica.',
+        b:['Usabilidad: interacción, consistencia, confianza y esfuerzo','Aceptación: utilidad percibida, facilidad e intención de uso'],
+        s:[['SUS','Usabilidad global'],['TAM','Aceptación tecnológica'],['No causal','Diseño descriptivo']],
+        tags:['pregunta de investigación','SUS','TAM'],
+        note:'Formula la pregunta con precisión. No se evaluó si la realidad virtual reduce accidentes ni si mejora el aprendizaje. Se evaluó cómo los usuarios perciben la interacción y si consideran útil y reutilizable la herramienta. Esa delimitación protege la validez de las conclusiones.',
+        min:1.5, cam:[5.5,4,2.5], target:[0,1,-6], station:3
+      },
+      {
+        e:'04 · Decisión de diseño', t:'RV de escritorio: reducir la barrera de acceso',
+        l:'La versión evaluada funciona con monitor, teclado y ratón; el visor quedó como línea de evolución.',
+        b:['Restricción explícita de acceso a hardware especializado','La aplicación conserva interacción 3D, navegación, objetos y retroalimentación'],
+        s:[['80 %','sin experiencia previa con dispositivos VR'],['RNF-01','usar la versión sin visor'],['WASD + ratón','interacción principal']],
+        tags:['modalidad de escritorio','accesibilidad','hardware'],
+        note:'Este es un punto clave para tu defensa. No presentes la ausencia de visor como un accidente: en la matriz de requerimientos aparece como restricción de acceso a hardware. Señala que la versión evaluada fue la de escritorio y que el proyecto conserva componentes orientados a visor, pero esa modalidad no fue parte de la evaluación.',
+        min:1.8, cam:[4.5,3.6,0], target:[-2.2,1,-7.5], station:4
+      },
+      {
+        e:'05 · Metodología', t:'Diagnosticar → construir → evaluar',
+        l:'Enfoque mixto con predominio cuantitativo, alcance descriptivo y diseño no experimental.',
+        b:['Encuesta diagnóstica + entrevista + revisión documental','Evaluación final posterior al uso del simulador'],
+        s:[['70','estudiantes · diagnóstico'],['32','estudiantes · evaluación principal'],['4','docentes/técnicos · valoración complementaria']],
+        tags:['muestreo por conveniencia','descriptivo','no experimental'],
+        vis:{type:'pipeline',items:['Diagnóstico','Requerimientos','Prototipo','Pruebas','SUS + TAM']},
+        note:'Explica las dos fases. Primero se obtuvo información del contexto para decidir qué representar; luego se construyó el sistema y se evaluó con usuarios. Recalca que no hubo grupo control ni manipulación experimental, por lo que los resultados describen percepciones y no relaciones causa-efecto.',
+        min:1.7, cam:[5,3.5,-2], target:[0,1,-9], station:5
+      },
+      {
+        e:'06 · Construcción', t:'Del laboratorio real al entorno virtual',
+        l:'El desarrollo fue iterativo: reconocer, prototipar, modelar, implementar, ajustar y probar.',
+        b:['Unreal Engine 5.7.4: entorno, lógica e interacción','Blender 4.5: creación y adaptación de modelos','JoyPlan: plano digital de referencia'],
+        s:[['Blueprints','lógica principal'],['C++','componentes orientados a VR'],['2 mapas','menú + laboratorio']],
+        tags:['prototipado iterativo','modelado 3D','Unreal Engine'],
+        vis:{type:'pipeline',items:['Entorno real','Plano','Modelado','Interacción','Build']},
+        note:'Aquí sí estás en terreno de Ingeniería en Computación. Explica que la lógica principal se implementó con Blueprints y que existían componentes C++ orientados a la adaptación con visor. Menciona el flujo de construcción y evita afirmar que seguiste una metodología ágil formal si no fue así.',
+        min:1.7, cam:[3.8,3.3,-4.5], target:[0,1,-11], station:6
+      },
+      {
+        e:'07 · Escenario 1', t:'EPP: la secuencia importa',
+        l:'Antes de ingresar, el usuario debe completar cinco elementos en el orden definido.',
+        b:['Bata → gorro → mascarilla → gafas → guantes','Una selección incorrecta no permite avanzar','El acceso se mantiene bloqueado hasta completar el EPP'],
+        s:[['5','elementos'],['RF-05','bloqueo de acceso'],['visual + audio','retroalimentación']],
+        tags:['validación secuencial','estado','feedback'],
+        note:'Haz énfasis en que el simulador no es un recorrido pasivo. El sistema mantiene estado, valida condiciones y restringe el avance. Este escenario demuestra la lógica de reglas: una acción fuera de secuencia genera retroalimentación y no modifica el progreso.',
+        min:1.7, cam:[2.8,2.7,-7], target:[-3.2,1,-12], station:7
+      },
+      {
+        e:'08 · Escenario 2', t:'Riesgo térmico: condiciones antes de actuar',
+        l:'Manipular el matraz requiere guantes térmicos y apagar previamente la fuente de calor.',
+        b:['La acción peligrosa queda bloqueada','El sistema informa qué requisito está pendiente','Solo entonces se habilita el traslado al autoclave'],
+        s:[['2','condiciones previas'],['1','matraz'],['1','autoclave']],
+        tags:['condiciones booleanas','prevención','control de estados'],
+        note:'Conecta este escenario con arquitectura. Aquí se ve claramente una máquina de estados simple: faltan guantes, falta apagar la fuente, o ambas condiciones están satisfechas. No necesitas entrar a Blueprint nodo por nodo; explica la lógica de validación.',
+        min:1.5, cam:[2.8,2.6,-10], target:[2.7,1,-13], station:8
+      },
+      {
+        e:'09 · Escenario 3', t:'Derrame: una tarea de varios pasos',
+        l:'El simulador transforma un incidente en una secuencia controlada de respuesta.',
+        b:['Delimitar el área','Preparar recipiente y pinza','Recoger 3 fragmentos','Absorber el líquido y completar la limpieza'],
+        s:[['3','fragmentos'],['3','aplicaciones absorbentes'],['checklist','avance visible']],
+        tags:['contadores','secuencia','orientación'],
+        note:'Este escenario es útil para explicar por qué aparecen listas de comprobación y señales. La tarea es más larga y el usuario necesita saber qué hizo y qué falta. Los contadores y estados controlan el avance, mientras la interfaz comunica el progreso.',
+        min:1.7, cam:[3.2,2.5,-13], target:[-2.3,.7,-15.5], station:9
+      },
+      {
+        e:'10 · Escenario 4', t:'Residuos: decidir también forma parte del aprendizaje',
+        l:'El recorrido finaliza cuando el usuario selecciona el destino admitido para el residuo generado.',
+        b:['La opción incorrecta genera rechazo','La opción prevista completa la actividad','El alcance se limita al residuo del escenario'],
+        s:[['1','decisión final'],['amarillo','destino admitido en la lógica'],['fin','recorrido completado']],
+        tags:['decisión','restricción','resultado'],
+        note:'Sé preciso: la tesis no afirma que se simulen todas las categorías de residuos. Se representa una situación concreta derivada del derrame. Esa precisión evita que el tribunal interprete el escenario como un módulo exhaustivo de gestión de residuos.',
+        min:1.4, cam:[2.7,2.3,-16], target:[3.1,.9,-17.5], station:10
+      },
+      {
+        e:'11 · Arquitectura funcional', t:'Interacción → estado → validación → retroalimentación',
+        l:'La experiencia se organiza en componentes funcionales conectados por las acciones del usuario.',
+        b:['Control del personaje','Sistema de interacción','Lógica de escenarios','Interfaces y retroalimentación'],
+        s:[['E / R','acciones'],['booleanos','condiciones'],['contadores','progreso']],
+        tags:['Blueprints','componentes','flujo de eventos'],
+        vis:{type:'pipeline',items:['Input','Interacción','Estado','Validación','Feedback']},
+        note:'Esta es la diapositiva que fortalece el carácter computacional. Describe el flujo: el input activa una interacción; la lógica consulta estados y contadores; la condición decide si la acción es válida; la interfaz devuelve feedback. Esa cadena se reutiliza en los cuatro escenarios.',
+        min:1.8, cam:[4.6,3,-18], target:[0,1,-20], station:11
+      },
+      {
+        e:'12 · Evaluación', t:'SUS mide la experiencia global; TAM mide la disposición de uso',
+        l:'Los instrumentos se aplicaron después de completar la experiencia.',
+        b:['SUS: 10 ítems → puntuación 0–100','TAM: utilidad, facilidad e intención','Análisis descriptivo + consistencia interna'],
+        s:[['10','ítems SUS'],['10','ítems TAM'],['5 puntos','escala de respuesta']],
+        tags:['Microsoft Forms','media + mediana + DE','alfa de Cronbach'],
+        note:'Aclara que SUS no es un porcentaje. Es una puntuación estandarizada. Para TAM, la investigación usó tres dimensiones con análisis descriptivo; no pretendió validar todas las relaciones causales del modelo original.',
+        min:1.5, cam:[5.2,3.1,-20.5], target:[0,1,-22], station:12
+      },
+      {
+        e:'13 · Resultado SUS', t:'Usabilidad: marginal y heterogénea',
+        l:'La media quedó cerca del límite aceptable, pero la experiencia no fue uniforme.',
+        b:['Principal dificultad: desplazamiento y orientación','Necesidad de apoyo e inconsistencias también redujeron la valoración'],
+        s:[['65,47','media SUS'],['23,23','desviación estándar'],['46,9 %','participantes > 70']],
+        tags:['25 % no aceptable','28,1 % marginal','46,9 % aceptable'],
+        vis:{type:'bars',items:[['No aceptable',25],['Marginal',28.1],['Aceptable',46.9]]},
+        note:'No trates 65,47 como “65 % de usabilidad”. Explica que es una puntuación SUS y que la desviación estándar de 23,23 evidencia experiencias muy distintas. Esa dispersión es tan importante como la media.',
+        min:1.8, cam:[5.4,3.2,-23], target:[-2,1,-24.5], station:13
+      },
+      {
+        e:'14 · Resultado TAM', t:'La utilidad fue alta; la facilidad de uso, más moderada',
+        l:'Los estudiantes vieron valor en la herramienta y mostraron disposición a reutilizarla.',
+        b:['La navegación concentra el mayor margen de mejora','La utilidad y la intención de uso son las fortalezas principales'],
+        s:[['4,19','utilidad percibida'],['3,57','facilidad de uso'],['4,18','intención de uso']],
+        tags:['90,6 % utilidad > 3','62,5 % facilidad > 3','87,5 % intención > 3'],
+        vis:{type:'bars',items:[['Utilidad',83.8],['Facilidad',71.4],['Intención',83.6]]},
+        note:'Puedes presentar estas barras como proporción de la escala de cinco puntos solo para visualizar, pero verbalmente di siempre las medias originales: 4,19; 3,57; 4,18. El hallazgo central es una aceptación favorable con una fricción concreta en navegación.',
+        min:1.8, cam:[5.5,3.3,-25.5], target:[2,1,-26], station:14
+      },
+      {
+        e:'15 · Cierre', t:'Útil y aceptado, pero todavía perfectible',
+        l:'La evidencia respalda parcialmente la idea a defender: aceptación favorable y usabilidad aún mejorable.',
+        b:['Aporte: simulador contextualizado + evaluación con usuarios','Límite: no se midió aprendizaje, conducta ni reducción de accidentes','Siguiente paso: mejorar navegación y evaluar rendimiento/visor en trabajos posteriores'],
+        s:[['4','escenarios'],['32','usuarios principales'],['1','línea clara de mejora']],
+        tags:['conclusiones','limitaciones','trabajo futuro'],
+        note:'Cierra con una frase responsable: el trabajo no demuestra que la realidad virtual reduzca accidentes. Demuestra que fue posible construir un recurso contextualizado, que los usuarios lo percibieron como útil y que la interacción —especialmente la navegación— debe mejorarse antes de una adopción más amplia.',
+        min:1.7, cam:[9,5.5,-28], target:[0,1,-27], station:15
+      }
+    ];
+
+    const canvas = document.getElementById('three');
+    const renderer = new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+    renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));
+    renderer.setSize(innerWidth,innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x031015);
+    scene.fog = new THREE.FogExp2(0x031015,.025);
+
+    const camera = new THREE.PerspectiveCamera(44,innerWidth/innerHeight,.1,160);
+    camera.position.set(...sections[0].cam);
+
+    const ambient = new THREE.HemisphereLight(0xa8fff0,0x041119,1.5);
+    scene.add(ambient);
+    const key = new THREE.DirectionalLight(0xffffff,2.2); key.position.set(5,10,6); scene.add(key);
+    const rim = new THREE.DirectionalLight(0x43c5ff,1.2); rim.position.set(-8,4,-12); scene.add(rim);
+
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(18,70),new THREE.MeshStandardMaterial({color:0x071a20,roughness:.82,metalness:.15}));
+    floor.rotation.x=-Math.PI/2; floor.position.z=-12; scene.add(floor);
+    const grid = new THREE.GridHelper(70,70,0x2a7565,0x12363a); grid.position.y=.004; grid.position.z=-12; grid.material.opacity=.28; grid.material.transparent=true; scene.add(grid);
+
+    const wallMat = new THREE.MeshStandardMaterial({color:0x0c252a,roughness:.65,metalness:.1});
+    const glassMat = new THREE.MeshStandardMaterial({color:0x4fc3c8,transparent:true,opacity:.08,roughness:.1,metalness:.1});
+    function box(x,y,z,w,h,d,mat=wallMat){
+      const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);scene.add(m);return m;
+    }
+    box(-8.5,1.5,-12,.15,3,68,wallMat); box(8.5,1.5,-12,.15,3,68,wallMat);
+    for(let z=5;z>-42;z-=8){ box(0,.5,z,10,.9,1.05,new THREE.MeshStandardMaterial({color:0x163237,roughness:.45,metalness:.35})); }
+
+    // Glass partitions and luminous ceiling lines
+    for(let z=1;z>-35;z-=9){ box(0,1.5,z,16,.04,.04,new THREE.MeshBasicMaterial({color:0x2ccda7,transparent:true,opacity:.35})); }
+    box(-4.3,1.55,-7,.05,2.7,8,glassMat); box(4.3,1.55,-22,.05,2.7,9,glassMat);
+
+    const stations=[];
+    function station(x,z,color=0x7cf6bf,scale=1){
+      const g=new THREE.Group(); g.position.set(x,0,z);
+      const ringMat=new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:.35,roughness:.3,metalness:.65});
+      const ring=new THREE.Mesh(new THREE.TorusGeometry(.76*scale,.055*scale,12,64),ringMat); ring.rotation.x=Math.PI/2; ring.position.y=.035;
+      const beacon=new THREE.Mesh(new THREE.CylinderGeometry(.035,.035,2.6,12),new THREE.MeshBasicMaterial({color,transparent:true,opacity:.22})); beacon.position.y=1.3;
+      g.add(ring,beacon); scene.add(g); stations.push({g,ring,mat:ringMat}); return g;
+    }
+
+    // Contextual 3D stations
+    station(0,0,0x7cf6bf,1.2);
+    station(-3,-2,0xff6b6b,.85);
+    station(0,-4,0x51b7ff,.85);
+    station(0,-6,0x7cf6bf,.85);
+
+    // Desktop VR station
+    const desk=station(-2.2,-7.5,0x51b7ff,.85);
+    const monitor=new THREE.Mesh(new THREE.BoxGeometry(1.3,.78,.08),new THREE.MeshStandardMaterial({color:0x101a1f,emissive:0x144d5b,emissiveIntensity:.8}));monitor.position.set(0,1.15,0);desk.add(monitor);
+    const stand=new THREE.Mesh(new THREE.BoxGeometry(.08,.5,.08),wallMat);stand.position.set(0,.7,0);desk.add(stand);
+
+    station(0,-9,0x7cf6bf,.85);
+    station(0,-11,0x7cf6bf,.85);
+
+    // PPE station
+    const ppe=station(-3.2,-12,0x7cf6bf,.9);
+    [-.55,-.27,0,.27,.55].forEach((x,i)=>{
+      const m=new THREE.Mesh(new THREE.BoxGeometry(.18,.18,.18),new THREE.MeshStandardMaterial({color:[0xdfe7e8,0x50c2e8,0xe8edf0,0x92d8ff,0x6682ff][i],roughness:.45}));
+      m.position.set(x,.55+i*.13,0);ppe.add(m);
+    });
+
+    // Thermal
+    const thermal=station(2.7,-13,0xffa65b,.9);
+    const hot=new THREE.Mesh(new THREE.CylinderGeometry(.48,.48,.16,32),new THREE.MeshStandardMaterial({color:0x20282b,emissive:0xff5b2e,emissiveIntensity:.55}));hot.position.y=.45;thermal.add(hot);
+    const flask=new THREE.Mesh(new THREE.ConeGeometry(.22,.58,24),new THREE.MeshPhysicalMaterial({color:0x87d9ff,transparent:true,opacity:.45,roughness:.05}));flask.position.y=.86;thermal.add(flask);
+
+    // Spill
+    const spill=station(-2.3,-15.5,0xff6b6b,1);
+    const puddle=new THREE.Mesh(new THREE.CircleGeometry(.82,40),new THREE.MeshPhysicalMaterial({color:0x5fb8ff,transparent:true,opacity:.38,roughness:.15}));puddle.rotation.x=-Math.PI/2;puddle.position.y=.02;spill.add(puddle);
+    for(let i=0;i<3;i++){const shard=new THREE.Mesh(new THREE.ConeGeometry(.12,.34,3),new THREE.MeshStandardMaterial({color:0xd8f2ff,roughness:.1,metalness:.15}));shard.position.set((i-1)*.36,.08,(i%2?-.25:.2));shard.rotation.z=.8;spill.add(shard);}
+
+    // Waste
+    const waste=station(3.1,-17.5,0xffd166,.95);
+    const binMat1=new THREE.MeshStandardMaterial({color:0xf3c73f,roughness:.45}), binMat2=new THREE.MeshStandardMaterial({color:0xc43b3b,roughness:.45});
+    const bin1=new THREE.Mesh(new THREE.CylinderGeometry(.36,.4,.8,24),binMat1);bin1.position.set(-.45,.42,0);waste.add(bin1);
+    const bin2=new THREE.Mesh(new THREE.CylinderGeometry(.36,.4,.8,24),binMat2);bin2.position.set(.45,.42,0);waste.add(bin2);
+
+    station(0,-20,0x51b7ff,1.0);
+    station(0,-22,0x7cf6bf,.9);
+
+    // Result boards: SUS
+    const sus=station(-2,-24.5,0x51b7ff,1);
+    [25,28.1,46.9].forEach((v,i)=>{
+      const h=v/18; const m=new THREE.Mesh(new THREE.BoxGeometry(.42,h,.42),new THREE.MeshStandardMaterial({color:0x4fc3ff,emissive:0x0d3150,emissiveIntensity:.4}));
+      m.position.set((i-1)*.65,h/2+.1,0);sus.add(m);
+    });
+
+    // TAM
+    const tam=station(2,-26,0x7cf6bf,1);
+    [4.19,3.57,4.18].forEach((v,i)=>{
+      const h=v*.62; const m=new THREE.Mesh(new THREE.BoxGeometry(.42,h,.42),new THREE.MeshStandardMaterial({color:0x7cf6bf,emissive:0x164938,emissiveIntensity:.4}));
+      m.position.set((i-1)*.65,h/2+.1,0);tam.add(m);
+    });
+
+    // Conclusion
+    const end=station(0,-27,0xffffff,1.25);
+    const halo=new THREE.Mesh(new THREE.TorusGeometry(1.5,.03,8,80),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.28}));halo.rotation.x=Math.PI/2;halo.position.y=.06;end.add(halo);
+
+    // Fill any missing station indices with nearest anchors
+    while(stations.length<sections.length) station(0,-28-stations.length*.2,0x7cf6bf,.65);
+
+    let current=0;
+    let camTarget=new THREE.Vector3(...sections[0].cam);
+    let lookTarget=new THREE.Vector3(...sections[0].target);
+    const currentLook=lookTarget.clone();
+
+    const $=id=>document.getElementById(id);
+    function visualHTML(v){
+      if(!v) return '';
+      if(v.type==='pipeline') return '<div class="pipeline">'+v.items.map((x,i)=>'<span class="pipe">'+x+'</span>'+(i<v.items.length-1?'<span class="arrow">→</span>':'')).join('')+'</div>';
+      if(v.type==='bars') return '<div class="bars">'+v.items.map(([n,val])=>'<div class="barrow"><span>'+n+'</span><div class="bartrack"><div class="barfill" style="width:'+val+'%"></div></div><b>'+val.toString().replace('.',',')+'%</b></div>').join('')+'</div>';
+      return '';
+    }
+    function setStep(i,instant=false){
+      current=Math.max(0,Math.min(sections.length-1,i));
+      const s=sections[current];
+      $('eyebrow').textContent=s.e;
+      $('title').textContent=s.t;
+      $('lead').textContent=s.l;
+      $('bullets').innerHTML=(s.b||[]).map(x=>'<li>'+x+'</li>').join('');
+      $('stats').innerHTML=(s.s||[]).map(([a,b])=>'<div class="stat"><b>'+a+'</b><span>'+b+'</span></div>').join('');
+      $('stats').style.display=(s.s&&s.s.length)?'grid':'none';
+      $('visual').innerHTML=visualHTML(s.vis);
+      $('micro').innerHTML=(s.tags||[]).map(x=>'<span class="pill">'+x+'</span>').join('');
+      $('counter').textContent=String(current+1).padStart(2,'0')+' / '+String(sections.length).padStart(2,'0');
+      $('progressBar').style.width=((current+1)/sections.length*100)+'%';
+      $('noteText').textContent=s.note;
+      const cumulative=sections.slice(0,current+1).reduce((a,x)=>a+x.min,0);
+      $('timeText').textContent='Tiempo sugerido en esta sección: '+s.min.toFixed(1).replace('.',',')+' min · acumulado ≈ '+cumulative.toFixed(1).replace('.',',')+' min';
+      $('sectionLabel').innerHTML='<strong>'+s.e+'</strong>Recorrido espacial · estación '+String(current+1).padStart(2,'0');
+      camTarget.set(...s.cam); lookTarget.set(...s.target);
+      stations.forEach((st,idx)=>{
+        const active=idx===s.station;
+        st.mat.emissiveIntensity=active?1.5:.22;
+        st.ring.scale.setScalar(active?1.18:1);
+      });
+      [...document.querySelectorAll('.dot')].forEach((d,idx)=>d.classList.toggle('active',idx===current));
+      if(instant){camera.position.copy(camTarget);currentLook.copy(lookTarget)}
+    }
+
+    const nav=$('navdots');
+    sections.forEach((s,i)=>{const b=document.createElement('button');b.className='dot';b.title=s.e+' · '+s.t;b.addEventListener('click',()=>setStep(i));nav.appendChild(b)});
+    $('prev').onclick=()=>setStep(current-1);
+    $('next').onclick=()=> current===sections.length-1 ? setStep(0) : setStep(current+1);
+    $('noteBtn').onclick=()=>toggleNotes();
+    $('fullBtn').onclick=()=>toggleFull();
+    $('startBtn').onclick=()=>{$('start').classList.add('hidden');setStep(0,true);showToast('Recorrido iniciado · N muestra notas del expositor')};
+
+    function toggleNotes(){$('notes').classList.toggle('open')}
+    function toggleFull(){
+      if(!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+      else document.exitFullscreen?.();
+    }
+    function showToast(msg){
+      const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),2200)
+    }
+
+    addEventListener('keydown',e=>{
+      if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();setStep(current+1)}
+      if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();setStep(current-1)}
+      if(e.key.toLowerCase()==='n')toggleNotes();
+      if(e.key.toLowerCase()==='f')toggleFull();
+      if(e.key==='Home')setStep(0);
+      if(e.key==='End')setStep(sections.length-1);
+    });
+
+    const clock=new THREE.Clock();
+    function animate(){
+      requestAnimationFrame(animate);
+      const t=clock.getElapsedTime();
+      camera.position.lerp(camTarget,.035);
+      currentLook.lerp(lookTarget,.045);
+      camera.lookAt(currentLook);
+      stations.forEach((s,i)=>{
+        s.ring.rotation.z += .0025 + (i===sections[current].station?.valueOf?.()?0.004:0);
+        s.g.children[1] && (s.g.children[1].material.opacity=.15+.08*Math.sin(t*1.5+i));
+      });
+      halo.rotation.z=t*.18;
+      renderer.render(scene,camera);
+    }
+    animate();
+    setStep(0,true);
+
+    addEventListener('resize',()=>{
+      camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));
+    });
+  </script>
+</body>
+</html>

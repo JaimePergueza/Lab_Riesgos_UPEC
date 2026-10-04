@@ -491,7 +491,7 @@
       currentLook.lerp(lookTarget,.045);
       camera.lookAt(currentLook);
       stations.forEach((s,i)=>{
-        s.ring.rotation.z += .0025 + (i===sections[current].station?.valueOf?.()?0.004:0);
+        s.ring.rotation.z += .0025 + (i===sections[current].station?0.004:0);
         s.g.children[1] && (s.g.children[1].material.opacity=.15+.08*Math.sin(t*1.5+i));
       });
       halo.rotation.z=t*.18;
